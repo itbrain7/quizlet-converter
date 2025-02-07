@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Quizlet_converter
 {
-    public partial class Form1 : Form
+    public partial class Form1 : Form, Printable
     {
 
 		bool USE_PROGRESSBAR = false;
@@ -19,6 +21,7 @@ namespace Quizlet_converter
         public Form1()
         {
             InitializeComponent();
+            CheckForIllegalCrossThreadCalls = false;
         }
 
         private void button_openfile_Click(object sender, EventArgs e)
@@ -29,7 +32,7 @@ namespace Quizlet_converter
 
 			//openFileDialog.Filter="Excel files (*.xls,*xlsx)|*.xls;*xlsx|All files (*.*)|*.*";
 
-			openFileDialog.Filter = "Html Files(*.html;*.htm)|*.html;*.htm|Text Files(*.txt;*.ini)|*.txt;*.text;*.ini|All files|*.*";
+			openFileDialog.Filter = "All files|*.*|Html Files(*.html;*.htm)|*.html;*.htm|Text Files(*.txt;*.ini)|*.txt;*.text;*.ini";
 
 			openFileDialog.ShowDialog();
             if (openFileDialog.FileName.Length > 0)
@@ -97,7 +100,11 @@ namespace Quizlet_converter
 			}
 			else
 			{
-				string output_file = start_file(input_file, true);
+
+                FileInfo output_file = AppConfig.getOutputFile(input_file);
+                File.WriteAllText(output_file.FullName, "");
+
+                start_file(new FileInfo(input_file), output_file, true);
 			}			
 		}
 
@@ -124,7 +131,9 @@ namespace Quizlet_converter
 
 				if (USE_PROGRESSBAR) progressBar1.Value = 100;
 
-				if (Directory.Exists(input_file))
+                log(AppConfig.last_output_file);
+
+                if (Directory.Exists(input_file))
 				{
 					log("입력한 디렉토리안의 파일 컨버팅이 완료되었습니다.", true);
 				}
@@ -221,93 +230,68 @@ namespace Quizlet_converter
 				return -1;
 			}
 
-			string[] files = Directory.GetFiles(input_dir);
+            IEnumerable < FileInfo > file_list = Directory.GetFiles(input_dir).Select(f => new FileInfo(f)).OrderBy(f => f.CreationTime); ;
 			int seq = 0;
 
-			foreach (string input_file in files) 
+			FileInfo output_file = AppConfig.getOutputFile(input_dir);
+		
+
+            File.AppendAllText(output_file.FullName, BookInfo.ToLinesHeader());
+
+            foreach (FileInfo input_file in file_list) 
             {
 				seq++;
-				start_file(input_file, false);
-				backgroundWorker1.ReportProgress(seq * 100 / files.Length);
+				start_file(input_file, output_file, false);
+				backgroundWorker1.ReportProgress(seq * 100 / file_list.Count());
             }
 
-			return files.Length;
+			AppConfig.last_output_file = output_file.FullName;
+
+            FnCommon.OpenNotePad(AppConfig.last_output_file);
+
+            return file_list.Count();
         }
 
-		private string start_file(string input_file, bool only_one) 
+		private string start_file(FileInfo input_file, FileInfo output_file, bool only_one) 
 		{		
 		
-			if (!File.Exists(input_file)) { 
+			if (!input_file.Exists) { 
 				return null;
 			}
 
 			if (only_one) backgroundWorker1.ReportProgress(10);
 
-			string str = System.IO.File.ReadAllText(input_file);
+			string input_file_string = System.IO.File.ReadAllText(input_file.FullName);
 
-			string output_dir = Path.Combine(System.IO.Directory.GetParent(input_file).FullName, @"Quizlet_converted_" + DateTime.Now.ToString("yyyyMMdd_HHmm"));
+			Task<BookInfo> task = Fn.parseBookInfo(input_file.Name, input_file_string, this);
 
-			if (!Directory.Exists(output_dir))
-            {
-				Directory.CreateDirectory(output_dir);
+			if (only_one)
+			{
+				backgroundWorker1.ReportProgress(90);
+                File.AppendAllText(output_file.FullName, BookInfo.ToLinesHeader());
             }
 			
-			string output_file = Path.Combine(output_dir, Path.GetFileName(input_file));
-			
-			string new_str = str;
-			string LINE = "<!------------------------------------>";
 
-			int step=0;
-		
-			while (true) {
+			File.AppendAllText(output_file.FullName, task.Result.ToLines());
 
-				//log("new_str.Length=" + new_str.Length);
-				string[] ss = splits(new_str, "<div style=\"display:none\">", "</div>");
-				if (ss.Length>=3) {				
-					String new_s1 = ss[1];
+			if (only_one)
+			{
+				backgroundWorker1.ReportProgress(100);
+				AppConfig.last_output_file = output_file.FullName;
 
-					
-					if (new_s1.IndexOf("</span><span>")>=0) {
-
-						if (only_one)
-						{
-							++step;
-							if (step<=8) backgroundWorker1.ReportProgress(step * 10);
-						}
-
-						while (true) {
-							
-							String new_s1_changed = replace_first(new_s1, "</span><span>", "\t");
-							new_s1_changed=replace_first(new_s1_changed, "</span><span>", "\r\n");
-							if (new_s1==new_s1_changed) {
-								break;
-							}
-							new_s1 = new_s1_changed;
-						}
-					
-						new_s1 = new_s1.Replace("<span>", "\r\n");
-						new_s1 = new_s1.Replace("</span>", "\r\n");
-						new_str = ss[0] + "\r\n" + LINE + "\r\n" + "<div style=\"display:none\" leedo>" + new_s1 + "</div>\r\n" + LINE + "\r\n" + ss[2];
-					}
-					else
-					{
-						new_str = ss[0] + new_s1 + ss[2];
-					}
-				}
-				else
-				{
-					break;
-				}
-			}
-
-			if (only_one) backgroundWorker1.ReportProgress(90);
-
-			File.WriteAllText(output_file, new_str);
-
-			if (only_one) backgroundWorker1.ReportProgress(100);
-
-			return output_file;
+                FnCommon.OpenNotePad(AppConfig.last_output_file);
+            }
+			return output_file.FullName;
 		}
 
+        public void printLn(string msg)
+        {
+            textBox2.AppendText(DateTime.Now.ToString("HH:mm:ss ") + msg + "\r\n");
+        }
+
+        public void errorLn(string msg)
+        {
+			printLn("ERROR: " + msg);
+        }
     }
 }

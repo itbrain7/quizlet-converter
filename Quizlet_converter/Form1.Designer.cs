@@ -29,91 +29,111 @@ namespace Quizlet_converter
         /// </summary>
         private void InitializeComponent()
         {
-            this.button_openfile = new System.Windows.Forms.Button();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button_convert = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button_opendirectory = new System.Windows.Forms.Button();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.SuspendLayout();
+            button_openfile = new System.Windows.Forms.Button();
+            openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            textBox1 = new System.Windows.Forms.TextBox();
+            button_convert = new System.Windows.Forms.Button();
+            textBox2 = new System.Windows.Forms.TextBox();
+            button_opendirectory = new System.Windows.Forms.Button();
+            folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            progressBar1 = new System.Windows.Forms.ProgressBar();
+            backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            label1 = new System.Windows.Forms.Label();
+            SuspendLayout();
             // 
             // button_openfile
             // 
-            this.button_openfile.Location = new System.Drawing.Point(12, 9);
-            this.button_openfile.Name = "button_openfile";
-            this.button_openfile.Size = new System.Drawing.Size(222, 41);
-            this.button_openfile.TabIndex = 0;
-            this.button_openfile.Text = "파일 선택";
-            this.button_openfile.UseVisualStyleBackColor = true;
-            this.button_openfile.Click += new System.EventHandler(this.button_openfile_Click);
+            button_openfile.Location = new System.Drawing.Point(15, 13);
+            button_openfile.Margin = new System.Windows.Forms.Padding(4);
+            button_openfile.Name = "button_openfile";
+            button_openfile.Size = new System.Drawing.Size(285, 55);
+            button_openfile.TabIndex = 0;
+            button_openfile.Text = "1. 파일 선택";
+            button_openfile.UseVisualStyleBackColor = true;
+            button_openfile.Click += button_openfile_Click;
             // 
             // openFileDialog1
             // 
-            this.openFileDialog1.FileName = "openFileDialog1";
+            openFileDialog1.FileName = "openFileDialog1";
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(12, 71);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(760, 23);
-            this.textBox1.TabIndex = 1;
+            textBox1.Location = new System.Drawing.Point(15, 89);
+            textBox1.Margin = new System.Windows.Forms.Padding(4);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new System.Drawing.Size(976, 27);
+            textBox1.TabIndex = 1;
             // 
             // button_convert
             // 
-            this.button_convert.Location = new System.Drawing.Point(14, 250);
-            this.button_convert.Name = "button_convert";
-            this.button_convert.Size = new System.Drawing.Size(222, 39);
-            this.button_convert.TabIndex = 2;
-            this.button_convert.Text = "컨버팅하기";
-            this.button_convert.UseVisualStyleBackColor = true;
-            this.button_convert.Click += new System.EventHandler(this.button_convert_Click);
+            button_convert.Location = new System.Drawing.Point(15, 148);
+            button_convert.Margin = new System.Windows.Forms.Padding(4);
+            button_convert.Name = "button_convert";
+            button_convert.Size = new System.Drawing.Size(285, 52);
+            button_convert.TabIndex = 2;
+            button_convert.Text = "3. 컨버팅하기";
+            button_convert.UseVisualStyleBackColor = true;
+            button_convert.Click += button_convert_Click;
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(12, 295);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox2.Size = new System.Drawing.Size(760, 143);
-            this.textBox2.TabIndex = 3;
+            textBox2.BackColor = System.Drawing.Color.FromArgb(224, 224, 224);
+            textBox2.Location = new System.Drawing.Point(15, 222);
+            textBox2.Margin = new System.Windows.Forms.Padding(4);
+            textBox2.Multiline = true;
+            textBox2.Name = "textBox2";
+            textBox2.ReadOnly = true;
+            textBox2.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            textBox2.Size = new System.Drawing.Size(976, 360);
+            textBox2.TabIndex = 3;
             // 
             // button_opendirectory
             // 
-            this.button_opendirectory.Location = new System.Drawing.Point(264, 9);
-            this.button_opendirectory.Name = "button_opendirectory";
-            this.button_opendirectory.Size = new System.Drawing.Size(222, 41);
-            this.button_opendirectory.TabIndex = 4;
-            this.button_opendirectory.Text = "디렉토리 선택";
-            this.button_opendirectory.UseVisualStyleBackColor = true;
-            this.button_opendirectory.Click += new System.EventHandler(this.button_opendirectory_Click);
+            button_opendirectory.Location = new System.Drawing.Point(360, 12);
+            button_opendirectory.Margin = new System.Windows.Forms.Padding(4);
+            button_opendirectory.Name = "button_opendirectory";
+            button_opendirectory.Size = new System.Drawing.Size(285, 55);
+            button_opendirectory.TabIndex = 4;
+            button_opendirectory.Text = "2. 디렉토리 선택";
+            button_opendirectory.UseVisualStyleBackColor = true;
+            button_opendirectory.Click += button_opendirectory_Click;
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(242, 250);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(530, 39);
-            this.progressBar1.TabIndex = 5;
+            progressBar1.Location = new System.Drawing.Point(320, 148);
+            progressBar1.Margin = new System.Windows.Forms.Padding(4);
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new System.Drawing.Size(681, 52);
+            progressBar1.TabIndex = 5;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(320, 29);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(23, 20);
+            label1.TabIndex = 6;
+            label1.Text = "or";
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 461);
-            this.Controls.Add(this.progressBar1);
-            this.Controls.Add(this.button_opendirectory);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.button_convert);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.button_openfile);
-            this.Name = "Form1";
-            this.Text = "Quizlet Converter";
-            this.Load += new System.EventHandler(this.Form1_Load);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1008, 615);
+            Controls.Add(label1);
+            Controls.Add(progressBar1);
+            Controls.Add(button_opendirectory);
+            Controls.Add(textBox2);
+            Controls.Add(button_convert);
+            Controls.Add(textBox1);
+            Controls.Add(button_openfile);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            Margin = new System.Windows.Forms.Padding(4);
+            Name = "Form1";
+            Text = "Quizlet Converter";
+            Load += Form1_Load;
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -127,6 +147,7 @@ namespace Quizlet_converter
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.Label label1;
     }
 }
 
