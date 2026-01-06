@@ -29,6 +29,7 @@ namespace Quizlet_converter
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             button_openfile = new System.Windows.Forms.Button();
             openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             textBox1 = new System.Windows.Forms.TextBox();
@@ -39,6 +40,7 @@ namespace Quizlet_converter
             progressBar1 = new System.Windows.Forms.ProgressBar();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             label1 = new System.Windows.Forms.Label();
+            label2 = new System.Windows.Forms.Label();
             SuspendLayout();
             // 
             // button_openfile
@@ -58,7 +60,7 @@ namespace Quizlet_converter
             // 
             // textBox1
             // 
-            textBox1.Location = new System.Drawing.Point(15, 89);
+            textBox1.Location = new System.Drawing.Point(15, 103);
             textBox1.Margin = new System.Windows.Forms.Padding(4);
             textBox1.Name = "textBox1";
             textBox1.Size = new System.Drawing.Size(976, 27);
@@ -92,7 +94,7 @@ namespace Quizlet_converter
             button_opendirectory.Location = new System.Drawing.Point(360, 12);
             button_opendirectory.Margin = new System.Windows.Forms.Padding(4);
             button_opendirectory.Name = "button_opendirectory";
-            button_opendirectory.Size = new System.Drawing.Size(285, 55);
+            button_opendirectory.Size = new System.Drawing.Size(235, 55);
             button_opendirectory.TabIndex = 4;
             button_opendirectory.Text = "2. 디렉토리 선택";
             button_opendirectory.UseVisualStyleBackColor = true;
@@ -115,11 +117,21 @@ namespace Quizlet_converter
             label1.TabIndex = 6;
             label1.Text = "or";
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(380, 73);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(199, 20);
+            label2.TabIndex = 7;
+            label2.Text = "(서브디렉토리까지도 가능）";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1008, 615);
+            Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(progressBar1);
             Controls.Add(button_opendirectory);
@@ -128,9 +140,10 @@ namespace Quizlet_converter
             Controls.Add(textBox1);
             Controls.Add(button_openfile);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(4);
             Name = "Form1";
-            Text = "Quizlet Converter";
+            Text = "Quizlet Converter 3.3";
             Load += Form1_Load;
             ResumeLayout(false);
             PerformLayout();
@@ -148,6 +161,7 @@ namespace Quizlet_converter
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
     }
 }
 

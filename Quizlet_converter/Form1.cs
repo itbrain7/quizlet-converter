@@ -39,7 +39,7 @@ namespace Quizlet_converter
             {
                 foreach (string filename in openFileDialog.FileNames)
                 {
-					log("Selected file : " + filename);
+					printLn("Selected file : " + filename);
 					this.textBox1.Text = filename;
                 }
             }       
@@ -58,8 +58,8 @@ namespace Quizlet_converter
 
 					string[] files = Directory.GetFiles(fbd.SelectedPath);
 
-					log("Selected directory : " + fbd.SelectedPath);
-					log("Files found: " + files.Length.ToString());
+					printLn("Selected directory : " + fbd.SelectedPath);
+					printLn("Files found: " + files.Length.ToString());
 				}
 			}
 		}
@@ -67,7 +67,9 @@ namespace Quizlet_converter
 		private void button_convert_Click(object sender, EventArgs e)
         {
 
-			if (USE_PROGRESSBAR)
+			textBox2.Text = "";
+
+            if (USE_PROGRESSBAR)
 			{
 				progressBar1.Value = 0;
 			}
@@ -95,16 +97,18 @@ namespace Quizlet_converter
 
 			string input_file = textBox1.Text;
 
-			if (Directory.Exists(input_file)) {
-				int cnt = start_directory(input_file);				
+            DirectoryInfo output_dir = AppConfig.getOutputDir(input_file);
+
+
+            if (Directory.Exists(input_file)) {
+				int cnt = Fn.start_directory(new DirectoryInfo(input_file), output_dir, 0, this);				
 			}
 			else
 			{
-
-                FileInfo output_file = AppConfig.getOutputFile(input_file);
+               FileInfo output_file = AppConfig.getOutputFile(input_file, output_dir);
                 File.WriteAllText(output_file.FullName, "");
 
-                start_file(new FileInfo(input_file), output_file, true);
+               Fn.start_file(new FileInfo(input_file), output_file, 0, true, this);
 			}			
 		}
 
@@ -123,7 +127,7 @@ namespace Quizlet_converter
 			// 에러가 있는지 체크
 			if (e.Error != null)
 			{
-				log(e.Error.Message);
+				errorLn(e.Error.Message);
 			}
 			else
             {
@@ -131,7 +135,7 @@ namespace Quizlet_converter
 
 				if (USE_PROGRESSBAR) progressBar1.Value = 100;
 
-                log(AppConfig.last_output_file);
+                printLn(AppConfig.last_output_file);
 
                 if (Directory.Exists(input_file))
 				{
@@ -155,17 +159,6 @@ namespace Quizlet_converter
             }
         }
 
-		private void log(String s)
-        {
-			log(s, false);
-        }
-
-		private void log(int i)
-        {
-			log(i.ToString(), false);
-        }
-
-
 		private void Form1_Load(object sender, EventArgs e)
 		{
 			
@@ -177,113 +170,6 @@ namespace Quizlet_converter
 
 		}
 
-		/// <summary>
-		/// 문자열에서 "찾을
-		/// </summary>
-		/// <param name="src">원본 문자열</param>
-		/// <param name="old_value">찾을 문자열</param>
-		/// <param name="new_value">변경할 문자열</param>
-		/// <returns></returns>
-		private string replace_first(string src, string old_value, string new_value)
-        {
-			int found = src.IndexOf(old_value);
-			if (found >= 0)
-			{
-				string temp_first = src.Substring(0, src.IndexOf(old_value));
-				string temp_last = src.Substring(src.IndexOf(old_value) + old_value.Length);
-				return temp_first + new_value + temp_last;
-			}
-			return src;
-		}
-
-		/// <summary>
-		/// 원본문자열을 시작문자열과 끝문자열을 기준으로 잘라서, 크기가 3인 문자열배열을 리턴한다.
-		/// (시작문자열 못찾으면 크기가 1인 문자열배열, 시작문자열은 찾고, 끝문자열을 못찾으면 크기가 2인 문자열)
-		/// </summary>
-		/// <param name="src">원본 문자열</param>
-		/// <param name="string_start">찾는시작 문자열</param>
-		/// <param name="string_end">찾기끝 문자열 </param>
-		/// <returns></returns>
-		private string[] splits(string src, string string_start, string string_end)
-        {
-
-			if (src == null) return null;
-
-			int found_start, found_end, cut_end;
-			
-			found_start = src.IndexOf(string_start);
-			if (found_start < 0) return new string[] { src };
-
-			string str_first = src.Substring(0, found_start);
-			found_end = src.IndexOf(string_end, found_start + string_start.Length);
-
-			if (found_end < 0) return new string[] { str_first, src.Substring(found_start + string_start.Length) };
-			cut_end = found_end + string_end.Length;
-
-			return new string[] { str_first, src.Substring(found_start + string_start.Length, found_end-found_start- (string_start.Length) ), src.Substring(cut_end) };		
-		}
-
-		private int start_directory(string input_dir)
-        {
-			if (!Directory.Exists(input_dir))
-            {
-				return -1;
-			}
-
-            IEnumerable < FileInfo > file_list = Directory.GetFiles(input_dir).Select(f => new FileInfo(f)).OrderBy(f => f.CreationTime); ;
-			int seq = 0;
-
-			FileInfo output_file = AppConfig.getOutputFile(input_dir);
-		
-
-            File.AppendAllText(output_file.FullName, BookInfo.ToLinesHeader());
-
-            foreach (FileInfo input_file in file_list) 
-            {
-				seq++;
-				start_file(input_file, output_file, false);
-				backgroundWorker1.ReportProgress(seq * 100 / file_list.Count());
-            }
-
-			AppConfig.last_output_file = output_file.FullName;
-
-            FnCommon.OpenNotePad(AppConfig.last_output_file);
-
-            return file_list.Count();
-        }
-
-		private string start_file(FileInfo input_file, FileInfo output_file, bool only_one) 
-		{		
-		
-			if (!input_file.Exists) { 
-				return null;
-			}
-
-			if (only_one) backgroundWorker1.ReportProgress(10);
-
-			string input_file_string = System.IO.File.ReadAllText(input_file.FullName);
-
-			Task<BookInfo> task = Fn.parseBookInfo(input_file.Name, input_file_string, this);
-
-			if (only_one)
-			{
-				backgroundWorker1.ReportProgress(90);
-                File.AppendAllText(output_file.FullName, BookInfo.ToLinesHeader());
-            }
-			
-
-			File.AppendAllText(output_file.FullName, task.Result.ToLines());
-
-			if (only_one)
-			{
-				backgroundWorker1.ReportProgress(100);
-				AppConfig.last_output_file = output_file.FullName;
-
-                FnCommon.OpenNotePad(AppConfig.last_output_file);
-            }
-			return output_file.FullName;
-		}
-
         public void printLn(string msg)
         {
             textBox2.AppendText(DateTime.Now.ToString("HH:mm:ss ") + msg + "\r\n");
@@ -292,6 +178,11 @@ namespace Quizlet_converter
         public void errorLn(string msg)
         {
 			printLn("ERROR: " + msg);
+        }
+
+        public void reportProgress(int percent)
+        {
+            backgroundWorker1.ReportProgress(percent);
         }
     }
 }

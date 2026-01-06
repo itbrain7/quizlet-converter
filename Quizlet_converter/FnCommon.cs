@@ -36,6 +36,26 @@ namespace Quizlet_converter
             }
         }
 
+        /// <summary>
+        /// 탐색기로 해당폴더를 연다.
+        /// </summary>
+        /// <param name="file"></param>
+        public static void OpenExplorer(String file)
+        {
+            if (System.IO.File.Exists(file))
+            {
+                Process.Start("explorer.exe", file);
+            }
+            else if (Directory.Exists(file))
+            {
+                Process.Start("explorer.exe", file);
+            }
+            else
+            {
+                MessageBox.Show(file, "존재하지 않는 파일은 탐색기로 열수 없음");
+            }
+        }
+
         public static String HttpGet(String url, Printable printable)
         {
 
@@ -142,6 +162,38 @@ namespace Quizlet_converter
                 }
             }
             return src.Substring(pos_start + start.Length, pos_end - pos_start - start.Length);
+        }
+
+
+        /// <summary>
+        /// Start와 end사이의 문자열List를 찾는다.
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="start">시작문자</param>
+        /// <param name="end">끝문자</param>
+       /// <returns></returns>
+        public static List<String> getInsideList(String src, String start, String end)
+        {
+            if (src == null) return null;
+
+            List<String> list = new List<String>();
+
+            int startIndex = 0;
+
+            while (true)
+            {
+                int pos_start = src.IndexOf(start, startIndex);
+                if (pos_start < 0) break;
+
+                int pos_end = src.IndexOf(end, pos_start + start.Length);
+                if (pos_end < 0) break;
+
+                list.Add(src.Substring(pos_start + start.Length, pos_end - pos_start - start.Length));
+
+                startIndex = pos_end + end.Length;
+            }
+
+            return list;
         }
 
         /// <summary>

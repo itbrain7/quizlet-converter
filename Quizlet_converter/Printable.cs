@@ -12,6 +12,8 @@ namespace Quizlet_converter
         void printLn(String msg);
 
         void errorLn(String msg);
+
+        void reportProgress(int percent);
     }
 
 }
