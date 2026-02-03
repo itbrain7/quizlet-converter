@@ -143,7 +143,7 @@ namespace Quizlet_converter
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(4);
             Name = "Form1";
-            Text = "Quizlet Converter 3.3";
+            Text = "Quizlet Converter 3.4";
             Load += Form1_Load;
             ResumeLayout(false);
             PerformLayout();

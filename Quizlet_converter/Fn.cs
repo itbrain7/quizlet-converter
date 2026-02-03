@@ -53,7 +53,7 @@ namespace Quizlet_converter
 
                     string[] suffixes =
                     {
-                       "'s Library Vocab Words 낱말 카드 | Quizlet"
+                       "낱말 카드 | Quizlet"
                     };
 
                     foreach (var suffix in suffixes)
